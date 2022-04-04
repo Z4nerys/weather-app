@@ -13,6 +13,7 @@ const main = async() =>{
                 const lugar = await leerInput('Ingrese el nombre de la ciudad:')
                 //buscar los lugares
                 await busquedas.ciudad(lugar)
+                //para peticiones http se usa axios para node
                 //seleccionar el lugar
 
                 //datos del clima
