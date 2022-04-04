@@ -1,11 +1,14 @@
+require('dotenv').config();
 const { inquirerMenu, leerInput, pausa } = require("./helpers/inquirer");
 const { Busquedas } = require("./models/busquedas");
 require('colors');
+
 
 const main = async() =>{
     let opt;
     const busquedas =  new Busquedas()
     do {
+        console.clear()
         opt = await inquirerMenu();
         switch (opt) {
             case 1:
