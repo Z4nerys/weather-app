@@ -17,6 +17,11 @@ class Busquedas {
         }
     }
 
+    async clima(lat, lng){
+        const datos = await axios.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${process.env.OPENWEATHER_KEY}&units=metric&lang=es`)
+        return datos.data
+    }
+
     async ciudad(lugar = '') {
         //peticion http
         try {
@@ -25,8 +30,14 @@ class Busquedas {
                 params: this.paramsMapbox
             })
             const resp = await instance.get();
-            console.log(resp.data.features)
-            return []
+            return resp.data.features.map( lugar =>({
+                //si uso llaves paretensis y llaves. significa que voy a regresar un objeto de forma implicita
+                //es como crear un objeto nuevo con los datos que obtengo de la respuesta
+                id: lugar.id,
+                nombre: lugar.place_name,
+                lng: lugar.center[0],
+                lat: lugar.center[1]
+            }))
 
         } catch (error) {
             console.log('error: ' + error)
