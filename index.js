@@ -4,12 +4,12 @@ const { Busquedas } = require("./models/busquedas");
 require('colors');
 
 
-const main = async() =>{
+const main = async () => {
     let opt;
-    const busquedas =  new Busquedas()
+    const busquedas = new Busquedas()
     do {
         console.clear()
-        
+
         opt = await inquirerMenu();
         switch (opt) {
             case 1:
@@ -17,35 +17,41 @@ const main = async() =>{
                 const ciudadBuscar = await leerInput('Ingrese el nombre de la ciudad:')
 
                 //buscar los lugares
+                
                 const lugares = await busquedas.ciudad(ciudadBuscar)
-
                 //para peticiones http se usa axios para node
                 //seleccionar el lugar
                 const id = await listarLugares(lugares)
-                const lugarSeleccionado = lugares.find(lugar => lugar.id == id)
-                //datos del clima
+                if (id === 0) continue;
 
-                const climaData = await busquedas.clima(lugarSeleccionado.lat, lugarSeleccionado.lng)
-                
+                const lugarSeleccionado = lugares.find(lugar => lugar.id == id)
+                //guardar en db
+                busquedas.agregarHistorial(lugarSeleccionado.nombre)
+                console.clear()
+                console.log('-----------------LOADING-----------------'.red)
+                //datos del clima
+                const { desc, min, max, temp } = await busquedas.clima(lugarSeleccionado.lat, lugarSeleccionado.lng)
                 //mostrar resultados
+                console.clear()
                 //las temperaturas estan en grados kelvin
-                console.log('\ninformacion de la ciudad '.green)
-                console.log('Ciudad: ', lugarSeleccionado.nombre);
+                console.log('informacion de la ciudad '.green)
+                console.log('\nCiudad: ', lugarSeleccionado.nombre.green);
                 console.log('Lat: ', lugarSeleccionado.lat)
                 console.log('Lng: ', lugarSeleccionado.lng)
-                console.log('Temperatura: ', climaData.main.temp)
-                console.log('Minima: ',climaData.main.temp_min)
-                console.log('Maxima: ', climaData.main.temp_max)
-                break;
-        
-            case 2:
-                console.log('soy Historial')
+                console.log('Temperatura: ', temp)
+                console.log('Minima: ', min)
+                console.log('Maxima: ', max)
+                console.log('Cielo: ', desc.green)
                 break;
 
-            default:
+            case 2:
+                console.log()
+                busquedas.historialCapitalizado.forEach((lugar, i)=>{
+                    console.log(`${1+i}. `.green + lugar)
+                })
                 break;
         }
-        if(opt !== 0) await pausa();
+        if (opt !== 0) await pausa();
     } while (opt !== 0);
 }
 
